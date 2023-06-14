@@ -1,0 +1,1 @@
+Truly random number generator made using a PSoC 4 CY8CKIT-149 kit and a https://github.com/SensorsIot/Geiger-Counter-RadiationD-v1.1-CAJOE- device. Original idea from here: https://www.youtube.com/watch?v=gwIGnATzBTg
