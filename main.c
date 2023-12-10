@@ -43,177 +43,140 @@
 #include "cy_pdl.h"
 #include "cybsp.h"
 
-#define DELAY 1 // MS delay after driving a sseg
+#define DELAY 1    // MS delay after driving a sseg
 
-typedef struct{
-	GPIO_PRT_Type* A_port;
+typedef struct {
+	GPIO_PRT_Type *A_port;
 	uint32_t A_pin;
-	GPIO_PRT_Type* B_port;
+	GPIO_PRT_Type *B_port;
 	uint32_t B_pin;
-	GPIO_PRT_Type* C_port;
+	GPIO_PRT_Type *C_port;
 	uint32_t C_pin;
-	GPIO_PRT_Type* D_port;
+	GPIO_PRT_Type *D_port;
 	uint32_t D_pin;
-	GPIO_PRT_Type* E_port;
+	GPIO_PRT_Type *E_port;
 	uint32_t E_pin;
-	GPIO_PRT_Type* F_port;
+	GPIO_PRT_Type *F_port;
 	uint32_t F_pin;
-	GPIO_PRT_Type* G_port;
+	GPIO_PRT_Type *G_port;
 	uint32_t G_pin;
-}sseg;
+} sseg;
 
-sseg rand_sseg = {
-	SSEG_A_PORT,
-	SSEG_A_PIN,
-	SSEG_B_PORT,
-	SSEG_B_PIN,
-	SSEG_C_PORT,
-	SSEG_C_PIN,
-	SSEG_D_PORT,
-	SSEG_D_PIN,
-	SSEG_E_PORT,
-	SSEG_E_PIN,
-	SSEG_F_PORT,
-	SSEG_F_PIN,
-	SSEG_G_PORT,
-	SSEG_G_PIN
-};
+sseg rand_sseg = {SSEG_A_PORT, SSEG_A_PIN,  SSEG_B_PORT, SSEG_B_PIN,  SSEG_C_PORT, SSEG_C_PIN,  SSEG_D_PORT,
+				  SSEG_D_PIN,  SSEG_E_PORT, SSEG_E_PIN,  SSEG_F_PORT, SSEG_F_PIN,  SSEG_G_PORT, SSEG_G_PIN};
 
 cy_stc_gpio_prt_config_t off_port_config = {
-        .dr			= 0x000000ffu, // All segs off
-        .intrCfg	= 0x00000000u, // No Interrupts
-        .pc			= 0x001b6db6u, // Seg A-G strong drive
-        .pc2		= 0x000000ffu,  // Disable input buffers
-        .sio		= 0x00000000u,  // Reserved
-        .selActive	= 0x00000000u,  // HSIOM - software controlled
+.dr = 0x000000ffu,           // All segs off
+.intrCfg = 0x00000000u,      // No Interrupts
+.pc = 0x001b6db6u,           // Seg A-G strong drive
+.pc2 = 0x000000ffu,          // Disable input buffers
+.sio = 0x00000000u,          // Reserved
+.selActive = 0x00000000u,    // HSIOM - software controlled
 };
 
 cy_stc_gpio_prt_config_t zero_port_config = {
-        .dr			= 0x00000040u, // Seg A,B,C,D,E,F=0
-        .intrCfg	= 0x00000000u, // No Interrupts
-        .pc			= 0x001b6db6u, // Seg A-G strong drive
-        .pc2		= 0x000000ffu,  // Disable input buffers
-        .sio		= 0x00000000u,  // Reserved
-        .selActive	= 0x00000000u,  // HSIOM - software controlled
+.dr = 0x00000040u,           // Seg A,B,C,D,E,F=0
+.intrCfg = 0x00000000u,      // No Interrupts
+.pc = 0x001b6db6u,           // Seg A-G strong drive
+.pc2 = 0x000000ffu,          // Disable input buffers
+.sio = 0x00000000u,          // Reserved
+.selActive = 0x00000000u,    // HSIOM - software controlled
 };
 
 cy_stc_gpio_prt_config_t one_port_config = {
-        .dr			= 0x00000079u, // Seg B,C=0
-        .intrCfg	= 0x00000000u, // No Interrupts
-        .pc			= 0x001b6db6u, // Seg A-G strong drive
-        .pc2		= 0x000000ffu,  // Disable input buffers
-        .sio		= 0x00000000u,  // Reserved
-        .selActive	= 0x00000000u,  // HSIOM - software controlled
+.dr = 0x00000079u,           // Seg B,C=0
+.intrCfg = 0x00000000u,      // No Interrupts
+.pc = 0x001b6db6u,           // Seg A-G strong drive
+.pc2 = 0x000000ffu,          // Disable input buffers
+.sio = 0x00000000u,          // Reserved
+.selActive = 0x00000000u,    // HSIOM - software controlled
 };
 
 cy_stc_gpio_prt_config_t two_port_config = {
-        .dr			= 0x000000a4u, // Seg A,B,D,E,G=0
-        .intrCfg	= 0x00000000u, // No Interrupts
-        .pc			= 0x001b6db6u, // Seg A-G strong drive
-        .pc2		= 0x000000ffu,  // Disable input buffers
-        .sio		= 0x00000000u,  // Reserved
-        .selActive	= 0x00000000u,  // HSIOM - software controlled
+.dr = 0x000000a4u,           // Seg A,B,D,E,G=0
+.intrCfg = 0x00000000u,      // No Interrupts
+.pc = 0x001b6db6u,           // Seg A-G strong drive
+.pc2 = 0x000000ffu,          // Disable input buffers
+.sio = 0x00000000u,          // Reserved
+.selActive = 0x00000000u,    // HSIOM - software controlled
 };
 
 cy_stc_gpio_prt_config_t three_port_config = {
-        .dr			= 0x00000030u, // Seg A,B,C,D,G=0
-        .intrCfg	= 0x00000000u, // No Interrupts
-        .pc			= 0x001b6db6u, // Seg A-G strong drive
-        .pc2		= 0x000000ffu,  // Disable input buffers
-        .sio		= 0x00000000u,  // Reserved
-        .selActive	= 0x00000000u,  // HSIOM - software controlled
+.dr = 0x00000030u,           // Seg A,B,C,D,G=0
+.intrCfg = 0x00000000u,      // No Interrupts
+.pc = 0x001b6db6u,           // Seg A-G strong drive
+.pc2 = 0x000000ffu,          // Disable input buffers
+.sio = 0x00000000u,          // Reserved
+.selActive = 0x00000000u,    // HSIOM - software controlled
 };
 
 cy_stc_gpio_prt_config_t four_port_config = {
-        .dr			= 0x00000019u, // Seg B,C,F,G=0
-        .intrCfg	= 0x00000000u, // No Interrupts
-        .pc			= 0x001b6db6u, // Seg A-G strong drive
-        .pc2		= 0x000000ffu,  // Disable input buffers
-        .sio		= 0x00000000u,  // Reserved
-        .selActive	= 0x00000000u,  // HSIOM - software controlled
+.dr = 0x00000019u,           // Seg B,C,F,G=0
+.intrCfg = 0x00000000u,      // No Interrupts
+.pc = 0x001b6db6u,           // Seg A-G strong drive
+.pc2 = 0x000000ffu,          // Disable input buffers
+.sio = 0x00000000u,          // Reserved
+.selActive = 0x00000000u,    // HSIOM - software controlled
 };
 
 cy_stc_gpio_prt_config_t five_port_config = {
-        .dr			= 0x00000012u, // Seg A,C,D,F,G=0
-        .intrCfg	= 0x00000000u, // No Interrupts
-        .pc			= 0x001b6db6u, // Seg A-G strong drive
-        .pc2		= 0x000000ffu,  // Disable input buffers
-        .sio		= 0x00000000u,  // Reserved
-        .selActive	= 0x00000000u,  // HSIOM - software controlled
+.dr = 0x00000012u,           // Seg A,C,D,F,G=0
+.intrCfg = 0x00000000u,      // No Interrupts
+.pc = 0x001b6db6u,           // Seg A-G strong drive
+.pc2 = 0x000000ffu,          // Disable input buffers
+.sio = 0x00000000u,          // Reserved
+.selActive = 0x00000000u,    // HSIOM - software controlled
 };
 
 cy_stc_gpio_prt_config_t six_port_config = {
-        .dr			= 0x00000002u, // Seg A,C,D,E,F,G=0
-        .intrCfg	= 0x00000000u, // No Interrupts
-        .pc			= 0x001b6db6u, // Seg A-G strong drive
-        .pc2		= 0x000000ffu,  // Disable input buffers
-        .sio		= 0x00000000u,  // Reserved
-        .selActive	= 0x00000000u,  // HSIOM - software controlled
+.dr = 0x00000002u,           // Seg A,C,D,E,F,G=0
+.intrCfg = 0x00000000u,      // No Interrupts
+.pc = 0x001b6db6u,           // Seg A-G strong drive
+.pc2 = 0x000000ffu,          // Disable input buffers
+.sio = 0x00000000u,          // Reserved
+.selActive = 0x00000000u,    // HSIOM - software controlled
 };
 
 cy_stc_gpio_prt_config_t seven_port_config = {
-        .dr			= 0x00000078u, // Seg A,C,D,E,F,G=0
-        .intrCfg	= 0x00000000u, // No Interrupts
-        .pc			= 0x001b6db6u, // Seg A-G strong drive
-        .pc2		= 0x000000ffu,  // Disable input buffers
-        .sio		= 0x00000000u,  // Reserved
-        .selActive	= 0x00000000u,  // HSIOM - software controlled
+.dr = 0x00000078u,           // Seg A,C,D,E,F,G=0
+.intrCfg = 0x00000000u,      // No Interrupts
+.pc = 0x001b6db6u,           // Seg A-G strong drive
+.pc2 = 0x000000ffu,          // Disable input buffers
+.sio = 0x00000000u,          // Reserved
+.selActive = 0x00000000u,    // HSIOM - software controlled
 };
 
 cy_stc_gpio_prt_config_t eight_port_config = {
-        .dr			= 0x00000000u, // Seg A,B,C,D,E,F,G=0
-        .intrCfg	= 0x00000000u, // No Interrupts
-        .pc			= 0x001b6db6u, // Seg A-G strong drive
-        .pc2		= 0x000000ffu,  // Disable input buffers
-        .sio		= 0x00000000u,  // Reserved
-        .selActive	= 0x00000000u,  // HSIOM - software controlled
+.dr = 0x00000000u,           // Seg A,B,C,D,E,F,G=0
+.intrCfg = 0x00000000u,      // No Interrupts
+.pc = 0x001b6db6u,           // Seg A-G strong drive
+.pc2 = 0x000000ffu,          // Disable input buffers
+.sio = 0x00000000u,          // Reserved
+.selActive = 0x00000000u,    // HSIOM - software controlled
 };
 
 cy_stc_gpio_prt_config_t nine_port_config = {
-        .dr			= 0x00000018u, // Seg A,B,C,F,G=0
-        .intrCfg	= 0x00000000u, // No Interrupts
-        .pc			= 0x001b6db6u, // Seg A-G strong drive
-        .pc2		= 0x000000ffu,  // Disable input buffers
-        .sio		= 0x00000000u,  // Reserved
-        .selActive	= 0x00000000u,  // HSIOM - software controlled
+.dr = 0x00000018u,           // Seg A,B,C,F,G=0
+.intrCfg = 0x00000000u,      // No Interrupts
+.pc = 0x001b6db6u,           // Seg A-G strong drive
+.pc2 = 0x000000ffu,          // Disable input buffers
+.sio = 0x00000000u,          // Reserved
+.selActive = 0x00000000u,    // HSIOM - software controlled
 };
 
-
-static inline void driveSSEG(sseg* SSEG, uint32_t num){
-	switch(num){
-	case 0:
-		Cy_GPIO_Port_Init(SSEG->A_port, &zero_port_config);
-		break;
-	case 1:
-		Cy_GPIO_Port_Init(SSEG->A_port, &one_port_config);
-		break;
-	case 2:
-		Cy_GPIO_Port_Init(SSEG->A_port, &two_port_config);
-		break;
-	case 3:
-		Cy_GPIO_Port_Init(SSEG->A_port, &three_port_config);
-		break;
-	case 4:
-		Cy_GPIO_Port_Init(SSEG->A_port, &four_port_config);
-		break;
-	case 5:
-		Cy_GPIO_Port_Init(SSEG->A_port, &five_port_config);
-		break;
-	case 6:
-		Cy_GPIO_Port_Init(SSEG->A_port, &six_port_config);
-		break;
-	case 7:
-		Cy_GPIO_Port_Init(SSEG->A_port, &seven_port_config);
-		break;
-	case 8:
-		Cy_GPIO_Port_Init(SSEG->A_port, &eight_port_config);
-		break;
-	case 9:
-		Cy_GPIO_Port_Init(SSEG->A_port, &nine_port_config);
-		break;
-	default:
-		Cy_GPIO_Port_Init(SSEG->A_port, &off_port_config);
-		break;
+static inline void driveSSEG(sseg *SSEG, uint32_t num) {
+	switch(num) {
+		case 0: Cy_GPIO_Port_Init(SSEG->A_port, &zero_port_config); break;
+		case 1: Cy_GPIO_Port_Init(SSEG->A_port, &one_port_config); break;
+		case 2: Cy_GPIO_Port_Init(SSEG->A_port, &two_port_config); break;
+		case 3: Cy_GPIO_Port_Init(SSEG->A_port, &three_port_config); break;
+		case 4: Cy_GPIO_Port_Init(SSEG->A_port, &four_port_config); break;
+		case 5: Cy_GPIO_Port_Init(SSEG->A_port, &five_port_config); break;
+		case 6: Cy_GPIO_Port_Init(SSEG->A_port, &six_port_config); break;
+		case 7: Cy_GPIO_Port_Init(SSEG->A_port, &seven_port_config); break;
+		case 8: Cy_GPIO_Port_Init(SSEG->A_port, &eight_port_config); break;
+		case 9: Cy_GPIO_Port_Init(SSEG->A_port, &nine_port_config); break;
+		default: Cy_GPIO_Port_Init(SSEG->A_port, &off_port_config); break;
 	}
 }
 
@@ -222,7 +185,7 @@ volatile uint32 randNo_huns = 10;
 volatile uint32 randNo_tens = 10;
 volatile uint32 randNo_ones = 10;
 
-static inline void drawNum(sseg* a_sseg){
+static inline void drawNum(sseg *a_sseg) {
 	// Write hundreds
 	Cy_GPIO_Write(SSEG_ONES_PORT, SSEG_ONES_PIN, 0);
 	driveSSEG(a_sseg, randNo_huns);
@@ -242,45 +205,42 @@ static inline void drawNum(sseg* a_sseg){
 	Cy_SysLib_Delay(DELAY);
 }
 
-void geigerTick_ISR(){
+void geigerTick_ISR() {
 	randNo = Cy_TCPWM_Counter_GetCapture(RAND_COUNTER_HW, RAND_COUNTER_NUM);
 	randNo_huns = randNo / 100;
 	randNo_tens = (randNo % 100) / 10;
 	randNo_ones = randNo % 10;
-	Cy_TCPWM_ClearInterrupt(RAND_COUNTER_HW, RAND_COUNTER_NUM, CY_TCPWM_INT_ON_CC); // Clear the interrupt
+	Cy_TCPWM_ClearInterrupt(RAND_COUNTER_HW, RAND_COUNTER_NUM, CY_TCPWM_INT_ON_CC);    // Clear the interrupt
 }
 
-int main(void)
-{
-    cy_rslt_t result;
+int main(void) {
+	cy_rslt_t result;
 
-    /* Initialize the device and board peripherals */
-    result = cybsp_init() ;
-    if (result != CY_RSLT_SUCCESS)
-    {
-        CY_ASSERT(0);
-    }
+	/* Initialize the device and board peripherals */
+	result = cybsp_init();
+	if(result != CY_RSLT_SUCCESS) {
+		CY_ASSERT(0);
+	}
 
-    /* Enable global interrupts */
-    __enable_irq();
+	/* Enable global interrupts */
+	__enable_irq();
 
-	cy_stc_sysint_t geigerIntrCfg =
-	{
-		RAND_COUNTER_IRQ,	// interrupt source
-		3UL 				// priority
+	cy_stc_sysint_t geigerIntrCfg = {
+	RAND_COUNTER_IRQ,    // interrupt source
+	3UL                  // priority
 	};
 
-	Cy_TCPWM_Counter_Init(RAND_COUNTER_HW, RAND_COUNTER_NUM, &RAND_COUNTER_config); // Initialize counter
-	Cy_TCPWM_Counter_Enable(RAND_COUNTER_HW, RAND_COUNTER_NUM); // Enable counter
-	Cy_TCPWM_TriggerStart(RAND_COUNTER_HW, RAND_COUNTER_MASK); // Start counter
+	Cy_TCPWM_Counter_Init(RAND_COUNTER_HW, RAND_COUNTER_NUM, &RAND_COUNTER_config);    // Initialize counter
+	Cy_TCPWM_Counter_Enable(RAND_COUNTER_HW, RAND_COUNTER_NUM);                        // Enable counter
+	Cy_TCPWM_TriggerStart(RAND_COUNTER_HW, RAND_COUNTER_MASK);                         // Start counter
 
-	Cy_GPIO_SetFilter(GEIGER_COUNTER_TRIGGER_PORT, GEIGER_COUNTER_TRIGGER_PIN); // 50ns glitch filter on geiger counter trigger in
-	Cy_SysInt_Init(&geigerIntrCfg, &geigerTick_ISR); // Initialize geiger interrupt vector
-	NVIC_EnableIRQ(geigerIntrCfg.intrSrc); // Enable geiger interrupt source
+	Cy_GPIO_SetFilter(GEIGER_COUNTER_TRIGGER_PORT, GEIGER_COUNTER_TRIGGER_PIN);    // 50ns glitch filter on geiger counter trigger in
+	Cy_SysInt_Init(&geigerIntrCfg, &geigerTick_ISR);                               // Initialize geiger interrupt vector
+	NVIC_EnableIRQ(geigerIntrCfg.intrSrc);                                         // Enable geiger interrupt source
 
-    for (;;){
-    	drawNum(&rand_sseg);
-    }
+	for(;;) {
+		drawNum(&rand_sseg);
+	}
 }
 
 /* [] END OF FILE */
